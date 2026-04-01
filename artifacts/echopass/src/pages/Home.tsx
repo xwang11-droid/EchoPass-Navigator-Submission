@@ -1,8 +1,34 @@
-import { useState } from "react";
+import { createThirdwebClient } from "thirdweb";
+import { polygon } from "thirdweb/chains";
+import { ConnectButton, darkTheme } from "thirdweb/react";
+
+const client = createThirdwebClient({
+  clientId: "9212d5bcee1b22fc5540a552e53aeba9",
+});
+
+const echoTheme = darkTheme({
+  colors: {
+    accentText: "#a855f7",
+    accentButtonBg: "#9333ea",
+    accentButtonText: "#ffffff",
+    primaryButtonBg: "#9333ea",
+    primaryButtonText: "#ffffff",
+    modalBg: "#0d0d18",
+    modalOverlayBg: "rgba(0,0,0,0.75)",
+    borderColor: "rgba(255,255,255,0.08)",
+    separatorLine: "rgba(255,255,255,0.06)",
+    secondaryText: "#9ca3af",
+    primaryText: "#f9fafb",
+    inputAutofillBg: "#0d0d18",
+    tooltipBg: "#1a1a2e",
+    tooltipText: "#f9fafb",
+    selectedTextBg: "#9333ea",
+    connectedButtonBg: "rgba(255,255,255,0.04)",
+    connectedButtonBgHover: "rgba(255,255,255,0.08)",
+  },
+});
 
 export default function Home() {
-  const [connected, setConnected] = useState(false);
-
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden hero-gradient">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -29,30 +55,42 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10">
-          <button
-            onClick={() => setConnected(!connected)}
-            className={`group relative px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 ${
-              connected
-                ? "bg-green-500/20 border border-green-500/50 text-green-400"
-                : "bg-purple-600 hover:bg-purple-500 text-white pulse-glow"
-            }`}
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              {connected ? (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-green-400" />
-                  Wallet Connected
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  Connect Wallet
-                </>
-              )}
-            </span>
-          </button>
+          <div className="connect-wallet-wrapper">
+            <ConnectButton
+              client={client}
+              chain={polygon}
+              theme={echoTheme}
+              connectButton={{
+                label: "Connect Wallet",
+                style: {
+                  background: "linear-gradient(135deg, #9333ea, #7c3aed)",
+                  color: "#ffffff",
+                  fontWeight: "600",
+                  fontSize: "1.125rem",
+                  padding: "1rem 2rem",
+                  borderRadius: "9999px",
+                  border: "none",
+                  boxShadow: "0 0 20px rgba(139,92,246,0.35)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                },
+              }}
+              detailsButton={{
+                style: {
+                  background: "rgba(255,255,255,0.04)",
+                  color: "#f9fafb",
+                  fontWeight: "600",
+                  fontSize: "1rem",
+                  padding: "0.875rem 1.75rem",
+                  borderRadius: "9999px",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  backdropFilter: "blur(12px)",
+                  boxShadow: "0 0 12px rgba(139,92,246,0.2)",
+                  cursor: "pointer",
+                },
+              }}
+            />
+          </div>
 
           <button className="px-8 py-4 rounded-full font-semibold text-lg text-gray-300 glass hover:bg-white/10 transition-all duration-300">
             Explore Artists
