@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Tab = "home" | "discover" | "vault" | "dao";
 
@@ -7,8 +7,34 @@ interface NavbarProps {
   onTabChange: (tab: Tab) => void;
 }
 
+const TAB_IDS: Tab[] = ["home", "discover", "vault", "dao"];
+
 export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tabContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const idx = TAB_IDS.indexOf(activeTab);
+    const btn = tabRefs.current[idx];
+    const container = tabContainerRef.current;
+    if (btn && container) {
+      const containerLeft = container.getBoundingClientRect().left;
+      const btnRect = btn.getBoundingClientRect();
+      setIndicatorStyle({
+        left: btnRect.left - containerLeft,
+        width: btnRect.width,
+      });
+    }
+  }, [activeTab]);
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     {
@@ -50,8 +76,23 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-      <div className="max-w-6xl mx-auto glass rounded-2xl px-6 py-3 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-500">
+      <div
+        className="max-w-6xl mx-auto rounded-2xl px-6 py-3 flex items-center justify-between transition-all duration-500"
+        style={{
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          background: scrolled
+            ? "rgba(10, 10, 18, 0.80)"
+            : "rgba(255, 255, 255, 0.04)",
+          border: scrolled
+            ? "1px solid rgba(255,255,255,0.06)"
+            : "1px solid rgba(255,255,255,0.08)",
+          boxShadow: scrolled
+            ? "0 8px 32px rgba(0,0,0,0.4)"
+            : "none",
+        }}
+      >
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -61,15 +102,26 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
           <span className="font-bold text-white text-lg tracking-tight">EchoPass</span>
         </div>
 
-        <div className="hidden md:flex items-center gap-1">
-          {tabs.map((tab) => (
+        <div ref={tabContainerRef} className="hidden md:flex items-center gap-1 relative">
+          <div
+            className="absolute top-0 bottom-0 rounded-xl bg-purple-600"
+            style={{
+              left: indicatorStyle.left,
+              width: indicatorStyle.width,
+              transition: "left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              boxShadow: "0 0 12px rgba(139, 92, 246, 0.5)",
+            }}
+          />
+
+          {tabs.map((tab, idx) => (
             <button
               key={tab.id}
+              ref={(el) => { tabRefs.current[idx] = el; }}
               onClick={() => onTabChange(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200 z-10 ${
                 activeTab === tab.id
-                  ? "bg-purple-600 text-white"
-                  : "text-gray-400 hover:text-white hover:bg-white/10"
+                  ? "text-white"
+                  : "text-gray-400 hover:text-white"
               }`}
             >
               {tab.icon}
@@ -78,8 +130,14 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-green-400" />
+        <div className="hidden md:flex items-center gap-2">
+          <div className="relative flex items-center justify-center w-3 h-3">
+            <span
+              className="absolute inline-flex w-full h-full rounded-full bg-green-400 opacity-60"
+              style={{ animation: "breath 2.4s ease-in-out infinite" }}
+            />
+            <span className="relative inline-flex w-2 h-2 rounded-full bg-green-400" />
+          </div>
           <span className="text-xs text-gray-400">Mainnet</span>
         </div>
 
@@ -94,7 +152,15 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden mt-2 glass rounded-2xl px-4 py-3 mx-0 max-w-6xl mx-auto">
+        <div
+          className="md:hidden mt-2 rounded-2xl px-4 py-3 max-w-6xl mx-auto"
+          style={{
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            background: "rgba(10, 10, 18, 0.80)",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -111,6 +177,13 @@ export default function Navbar({ activeTab, onTabChange }: NavbarProps) {
           ))}
         </div>
       )}
+
+      <style>{`
+        @keyframes breath {
+          0%, 100% { transform: scale(1); opacity: 0.6; }
+          50% { transform: scale(2.2); opacity: 0; }
+        }
+      `}</style>
     </nav>
   );
 }
