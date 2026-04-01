@@ -3,7 +3,6 @@ export default function Vault() {
     <div className="min-h-screen pt-24 pb-12 px-6 max-w-4xl mx-auto">
       <div className="mb-10">
         <h1 className="text-4xl font-bold text-white mb-2">My Vault</h1>
-        <p className="text-gray-400">Your exclusive NFT-gated music collection</p>
       </div>
 
       <div className="relative">
