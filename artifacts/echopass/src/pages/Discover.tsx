@@ -134,7 +134,7 @@ function FloatingPlayer({ artist, onClose }: FloatingPlayerProps) {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-            <span className="text-xs text-purple-300 font-medium">正在试听</span>
+            <span className="text-xs text-purple-300 font-medium">Now Playing</span>
           </div>
           <button
             onClick={handleClose}
@@ -147,7 +147,7 @@ function FloatingPlayer({ artist, onClose }: FloatingPlayerProps) {
         </div>
 
         <p className="text-xs text-gray-400 mb-3 leading-snug">
-          正在试听校友歌手 <span className="text-white font-semibold">{artist.name}</span> 的作品
+          Previewing a track by <span className="text-white font-semibold">{artist.name}</span>
         </p>
 
         <div className="flex items-center gap-3">
