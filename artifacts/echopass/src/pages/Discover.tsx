@@ -42,9 +42,9 @@ const artists = [
   },
   {
     id: 3,
-    name: "KRSH",
-    genre: "Hip-Hop · Experimental",
-    tags: ["Hip-Hop", "Experimental"],
+    name: "Kaleb Reyna",
+    genre: "Hip-Hop",
+    tags: ["Hip-Hop"],
     avatar: "KR",
     color: "from-cyan-500 to-emerald-600",
     glowColor: "rgba(6,182,212,0.35)",
@@ -55,19 +55,19 @@ const artists = [
       { title: "Glitch Era", duration: "3:22", plays: "11.2K" },
       { title: "Binary Bars", duration: "2:44", plays: "8.7K" },
     ],
-    bio: "Underground rapper-producer pushing the limits of experimental hip-hop with glitch aesthetics and hyper-dense lyricism.",
+    bio: "Hip-Hop artist with a distinct voice and sharp lyricism. Known for authentic storytelling and hard-hitting production.",
     price: "0.06 ETH",
     previewUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+    spotifyUrl: "https://open.spotify.com/artist/3bpFgOURKBCczDYWtOx55H?si=aNydmcrrRP6fdos1p1Zyog",
   },
 ];
 
-const genres = ["All", "Pop", "Hip-Hop", "Afrobeats", "Experimental"];
+const genres = ["All", "Pop", "Hip-Hop", "Afrobeats"];
 
 const genreToArtistId: Record<string, number> = {
   Pop: 1,
   Afrobeats: 2,
   "Hip-Hop": 3,
-  Experimental: 3,
 };
 
 interface FloatingPlayerProps {
