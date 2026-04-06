@@ -3,10 +3,10 @@ import { useState, useRef, useEffect } from "react";
 const artists = [
   {
     id: 1,
-    name: "Nova Pulse",
-    genre: "Electronic · Ambient",
-    tags: ["Electronic", "Experimental"],
-    avatar: "NP",
+    name: "MingChen Liang",
+    genre: "Pop",
+    tags: ["Pop"],
+    avatar: "ML",
     color: "from-purple-600 to-blue-600",
     glowColor: "rgba(139,92,246,0.35)",
     followers: "42.3K",
@@ -16,9 +16,10 @@ const artists = [
       { title: "Synthetic Drift", duration: "3:55", plays: "12.7K" },
       { title: "Neural Bloom", duration: "5:10", plays: "9.4K" },
     ],
-    bio: "Electronic producer blending ambient textures with deep bass frequencies. Known for cinematic soundscapes that transcend genres.",
+    bio: "Pop artist crafting heartfelt melodies and cinematic soundscapes. Known for emotionally resonant songwriting that connects across borders.",
     price: "0.08 ETH",
     previewUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    spotifyUrl: "https://open.spotify.com/artist/6uznhEdfpGu4ZjuKB1p9RV?si=2D6y3cpZT1OvZ8qCDYEitA",
   },
   {
     id: 2,
@@ -60,10 +61,10 @@ const artists = [
   },
 ];
 
-const genres = ["All", "Electronic", "Hip-Hop", "Afrobeats", "Experimental"];
+const genres = ["All", "Pop", "Hip-Hop", "Afrobeats", "Experimental"];
 
 const genreToArtistId: Record<string, number> = {
-  Electronic: 1,
+  Pop: 1,
   Afrobeats: 2,
   "Hip-Hop": 3,
   Experimental: 3,
@@ -441,7 +442,7 @@ export default function Discover() {
       <div className="flex gap-3 mb-8 flex-wrap">
         {genres.map((genre) => {
           const isActive = activeGenre === genre;
-          const isElectronic = genre === "Electronic" && activeGenre !== "Electronic";
+          const isElectronic = genre === "Pop" && activeGenre !== "Pop";
           return (
             <button
               key={genre}
@@ -479,7 +480,15 @@ export default function Discover() {
               }}
             >
               <button
-                onClick={() => setSelectedArtist(artist)}
+                onClick={() => {
+                  if (isDimmed) return;
+                  const a = artist as typeof artist & { spotifyUrl?: string };
+                  if (a.spotifyUrl) {
+                    window.open(a.spotifyUrl, "_blank", "noopener,noreferrer");
+                  } else {
+                    setSelectedArtist(artist);
+                  }
+                }}
                 disabled={isDimmed}
                 className="w-full rounded-3xl overflow-hidden text-left group"
                 style={{
@@ -537,7 +546,11 @@ export default function Discover() {
                   </div>
 
                   <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-xs text-gray-500">Click to view profile</span>
+                    <span className="text-xs text-gray-500">
+                      {(artist as typeof artist & { spotifyUrl?: string }).spotifyUrl
+                        ? "View on Spotify"
+                        : "Click to view profile"}
+                    </span>
                     <svg className="w-4 h-4 text-purple-400 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
