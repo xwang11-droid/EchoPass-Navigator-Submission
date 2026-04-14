@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const artists = [
   {
@@ -208,10 +208,74 @@ function ArtistProfile({ artist, onBack }: { artist: (typeof artists)[0]; onBack
   );
 }
 
+function HoldersOnlyModal({ artist, onClose, onMint }: {
+  artist: (typeof artists)[0];
+  onClose: () => void;
+  onMint: () => void;
+}) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
+      onClick={onClose}
+    >
+      <div
+        className="rounded-3xl p-8 max-w-sm w-full text-center"
+        style={{
+          background: "rgba(12,10,22,0.98)",
+          border: "1px solid rgba(139,92,246,0.4)",
+          boxShadow: "0 0 60px rgba(139,92,246,0.2), 0 8px 40px rgba(0,0,0,0.6)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
+          style={{ background: "linear-gradient(135deg, #9333ea, #ec4899)", boxShadow: "0 0 32px rgba(139,92,246,0.5)" }}
+        >
+          <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <div
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-purple-300 mb-4"
+          style={{ background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.3)" }}
+        >
+          Holders Only
+        </div>
+        <h3 className="text-2xl font-bold text-white mb-3">This demo is locked.</h3>
+        <p className="text-gray-400 leading-relaxed mb-6 text-sm">
+          Mint the <span className="text-white font-semibold">Genesis Pass</span> to unlock this exclusive Berklee demo by{" "}
+          <span className="text-purple-300 font-semibold">{artist.name}</span>. Day 1 supporters only.
+        </p>
+        <button
+          onClick={onMint}
+          className="w-full py-3.5 rounded-2xl font-semibold text-white mb-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          style={{
+            background: "linear-gradient(135deg, #9333ea, #ec4899)",
+            boxShadow: "0 4px 24px rgba(139,92,246,0.4)",
+          }}
+        >
+          Mint Genesis Pass · {artist.price}
+        </button>
+        <button onClick={onClose} className="w-full py-2.5 rounded-2xl text-sm text-gray-500 hover:text-gray-300 transition-colors">
+          Maybe later
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Discover() {
   const [selectedArtist, setSelectedArtist] = useState<(typeof artists)[0] | null>(null);
   const [activeGenre, setActiveGenre] = useState("All");
   const [floatingPlayer, setFloatingPlayer] = useState<(typeof artists)[0] | null>(null);
+  const [lockedModalArtist, setLockedModalArtist] = useState<(typeof artists)[0] | null>(null);
   const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   const handleGenreClick = (genre: string) => {
@@ -245,8 +309,12 @@ export default function Discover() {
   return (
     <div className="min-h-screen pt-24 pb-12 px-6 max-w-6xl mx-auto">
       <div className="mb-10">
+        <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-purple-300 mb-3"
+          style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.25)" }}>
+          Berklee Originals
+        </div>
         <h1 className="text-4xl font-bold text-white mb-2">Discover</h1>
-        <p className="text-gray-400">Explore artists and collect their exclusive music NFTs</p>
+        <p className="text-gray-400">Collect Genesis Passes from Berklee's next generation of global artists</p>
       </div>
 
       <div className="flex gap-3 mb-8 flex-wrap">
@@ -323,11 +391,28 @@ export default function Discover() {
                   </div>
                 </div>
 
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="mb-3"
-                >
+                <div className="relative mb-3">
                   <SpotifyEmbed artistId={artist.spotifyArtistId} height={152} />
+                  <div
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-2 cursor-pointer rounded-xl group/lock"
+                    style={{
+                      background: "rgba(6,4,16,0.82)",
+                      backdropFilter: "blur(4px)",
+                      border: "1px solid rgba(139,92,246,0.2)",
+                    }}
+                    onClick={(e) => { e.stopPropagation(); setLockedModalArtist(artist); }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover/lock:scale-110"
+                      style={{ background: "linear-gradient(135deg,#9333ea,#ec4899)", boxShadow: "0 0 20px rgba(139,92,246,0.5)" }}
+                    >
+                      <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-semibold text-purple-300">Holders Only</span>
+                    <span className="text-xs text-gray-500">Mint Pass to unlock</span>
+                  </div>
                 </div>
 
                 <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-between">
@@ -351,6 +436,14 @@ export default function Discover() {
 
       {floatingPlayer && (
         <FloatingPlayer artist={floatingPlayer} onClose={() => setFloatingPlayer(null)} />
+      )}
+
+      {lockedModalArtist && (
+        <HoldersOnlyModal
+          artist={lockedModalArtist}
+          onClose={() => setLockedModalArtist(null)}
+          onMint={() => { setLockedModalArtist(null); setSelectedArtist(lockedModalArtist); }}
+        />
       )}
 
       <style>{`
