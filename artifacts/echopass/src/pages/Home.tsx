@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createThirdwebClient } from "thirdweb";
 import { polygon } from "thirdweb/chains";
 import { ConnectButton, darkTheme } from "thirdweb/react";
@@ -67,7 +68,57 @@ const rewards = [
   },
 ];
 
+const feedback = [
+  {
+    name: "Alex",
+    handle: "@alexmints",
+    role: "Genesis Pass holder · 6 NFTs",
+    color: "from-purple-500 to-violet-600",
+    avatar: "A",
+    comment:
+      "I minted ZURI's pass two weeks before her single dropped on Spotify. Watching the streams climb knowing I was there from day one — that's the rush you can't get from a normal subscription.",
+  },
+  {
+    name: "Jordan",
+    handle: "@jordan.eth",
+    role: "Berklee '24 · Producer",
+    color: "from-pink-500 to-rose-600",
+    avatar: "J",
+    comment:
+      "The Discord access alone is worth the mint. Got real production notes from a Grammy-nominated alum on a track I was stuck on for months. EchoPass actually feels like a community, not a marketplace.",
+  },
+  {
+    name: "Casey",
+    handle: "@caseyloops",
+    role: "Music journalist",
+    color: "from-cyan-500 to-emerald-600",
+    avatar: "C",
+    comment:
+      "Finally a Web3 music platform that doesn't feel gimmicky. The stems and demo leaks are genuinely exclusive — I've heard things here that won't release publicly for months.",
+  },
+  {
+    name: "Riley",
+    handle: "@rileysound",
+    role: "Day 1 supporter",
+    color: "from-amber-400 to-orange-500",
+    avatar: "R",
+    comment:
+      "Bought MingChen Liang's pass when he had 200 listeners. He just hit 42K. The badge in my wallet is the receipt — and the bragging rights are forever.",
+  },
+  {
+    name: "Sam",
+    handle: "@sam.vault",
+    role: "Collector · 3 vaults unlocked",
+    color: "from-blue-500 to-indigo-600",
+    avatar: "S",
+    comment:
+      "The variable rewards keep me opening the app daily. Every new drop feels like a hunt — you never know which artist is about to blow up next.",
+  },
+];
+
 export default function Home() {
+  const [showFeedback, setShowFeedback] = useState(false);
+
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
       {/* ── Hero ── */}
@@ -222,6 +273,102 @@ export default function Home() {
           <p className="text-gray-500 text-sm">
             Passes are limited. Once an artist's vault closes, it's gone forever.
           </p>
+        </div>
+      </div>
+
+      {/* ── Community Feedback Section ── */}
+      <div className="relative px-6 pb-24 max-w-5xl mx-auto w-full">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-violet-600/5 blur-3xl" />
+        </div>
+
+        <div className="relative z-10 text-center mb-10">
+          <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-purple-300 mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            Community Feedback · Live from holders
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            What Day 1 Supporters Are <span className="gradient-text">Saying.</span>
+          </h2>
+          <p className="text-gray-400 max-w-xl mx-auto leading-relaxed">
+            Real reactions from EchoPass beta testers — the holders who got in early.
+          </p>
+
+          <button
+            onClick={() => setShowFeedback((v) => !v)}
+            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition-all hover:scale-[1.03] active:scale-[0.97]"
+            style={{
+              background: showFeedback
+                ? "rgba(255,255,255,0.05)"
+                : "linear-gradient(135deg, #9333ea, #7c3aed)",
+              border: showFeedback
+                ? "1px solid rgba(255,255,255,0.12)"
+                : "1px solid rgba(139,92,246,0.6)",
+              boxShadow: showFeedback
+                ? "none"
+                : "0 4px 24px rgba(139,92,246,0.35)",
+            }}
+          >
+            <svg
+              className="w-4 h-4 transition-transform"
+              style={{ transform: showFeedback ? "rotate(180deg)" : "rotate(0deg)" }}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            {showFeedback ? "Hide Tester Feedback" : "View Tester Feedback"}
+          </button>
+        </div>
+
+        <div
+          className="relative z-10 overflow-hidden transition-all duration-500"
+          style={{
+            maxHeight: showFeedback ? "2400px" : "0px",
+            opacity: showFeedback ? 1 : 0,
+          }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            {feedback.map((f, i) => (
+              <div
+                key={f.handle}
+                className="rounded-3xl p-6 transition-all duration-300"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  transform: showFeedback ? "translateY(0)" : "translateY(20px)",
+                  transitionDelay: showFeedback ? `${i * 80}ms` : "0ms",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(139,92,246,0.3)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 12px 32px rgba(139,92,246,0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.07)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+                }}
+              >
+                <div className="flex items-start gap-3 mb-4">
+                  <div
+                    className={`w-11 h-11 rounded-full bg-gradient-to-br ${f.color} flex items-center justify-center text-white font-bold shrink-0`}
+                  >
+                    {f.avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-semibold text-white truncate">{f.name}</p>
+                      <svg className="w-4 h-4 text-purple-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-500 truncate">{f.handle} · {f.role}</p>
+                  </div>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">"{f.comment}"</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
